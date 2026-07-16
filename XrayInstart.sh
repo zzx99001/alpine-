@@ -381,7 +381,7 @@ write_config() {
   },
   "inbounds": [
     {
-      "port": ${PORT},
+      "port": 443,
       "protocol": "vless",
       "settings": {
         "clients": [
