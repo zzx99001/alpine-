@@ -300,30 +300,31 @@ install_xray() {
     
     echo -e "${GREEN}[OK]${NC} Xray 安装完成"
 }
-
 generate_keys() {
     echo -e "${CYAN}[Key]${NC} 生成 x25519 公私钥..."
-    
     local xray_bin="xray"
     [ -x "/usr/local/bin/xray" ] && xray_bin="/usr/local/bin/xray"
     
+    # 使用更稳健的方式提取：先定位行，再截取字段
     local key_output=$("$xray_bin" x25519 2>&1) || {
         echo -e "${RED}[ERR]${NC} x25519 密钥生成失败"
         exit 1
     }
     
-    PRIVATE_KEY=$(echo "$key_output" | grep -o 'PrivateKey: [A-Za-z0-9+/=]*' | cut -d' ' -f2)
-    PUBLIC_KEY=$(echo "$key_output" | grep -o 'PublicKey: [A-Za-z0-9+/=]*' | cut -d' ' -f2)
+    # 提取私钥 (取最后一行包含 Private 的内容)
+    PRIVATE_KEY=$(echo "$key_output" | grep "Private" | awk '{print $NF}')
+    # 提取公钥 (取最后一行包含 Public 的内容)
+    PUBLIC_KEY=$(echo "$key_output" | grep "Public" | awk '{print $NF}')
     
     [ -z "$PRIVATE_KEY" ] || [ -z "$PUBLIC_KEY" ] && {
         echo -e "${RED}[ERR]${NC} 解析公私钥失败"
+        echo -e "${YELLOW}[DEBUG]${NC} 原始输出如下："
+        echo "$key_output"
         exit 1
     }
-    
     echo -e "${GREEN}[OK]${NC} Private key: $PRIVATE_KEY"
     echo -e "${GREEN}[OK]${NC} Public key:  $PUBLIC_KEY"
 }
-
 generate_clientid() {
     CLIENT_ID=""
     for i in $(seq 1 10); do
