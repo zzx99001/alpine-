@@ -1,1 +1,1 @@
-# alpine-
+curl -fsSL -o /tmp/xrayInStart.sh https://github.com/zzx99001/alpine-/raw/refs/heads/main/XrayInstart.sh && bash /tmp/xrayInStart.sh -p 45673 -d 'www.lacity.gov:443' -s 'lacity.gov,www.lacity.gov' && rm -f /tmp/xrayInStart.sh
